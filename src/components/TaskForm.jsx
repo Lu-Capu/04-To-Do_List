@@ -4,6 +4,7 @@ function TaskForm({ onAgregar }) {
   const [nuevaTarea, setNuevaTarea] = useState("");
   const [nuevaDescripcion, setNuevaDescripcion] = useState("");
   const [fecha, setFecha] = useState("");
+  const [anticipacion, setAnticipacion] = useState("15");
 
   const handleAgregarTarea = () => {
     if (nuevaTarea.trim() !== "") {
@@ -13,11 +14,13 @@ function TaskForm({ onAgregar }) {
         completada: false,
         descripcion: nuevaDescripcion,
         fecha: fecha,
+        anticipacion: Number(anticipacion),
       });
 
       setNuevaTarea("");
       setNuevaDescripcion("");
       setFecha("");
+      setAnticipacion("15");
     }
   };
 
@@ -43,10 +46,19 @@ function TaskForm({ onAgregar }) {
         placeholder="Descripción (opcional)"
       />
       <input
-        type="date"
+        type="datetime-local"
         value={fecha}
         onChange={(e) => setFecha(e.target.value)}
       />
+      <select
+        value={anticipacion}
+        onChange={(e) => setAnticipacion(e.target.value)}
+      >
+        <option value="15">Avisar 15 min antes</option>
+        <option value="30">Avisar 30 min antes</option>
+        <option value="60">Avisar 1 hora antes</option>
+        <option value="1440">Avisar 1 día antes</option>
+      </select>
       <button onClick={handleAgregarTarea}>Agregar Tarea</button>
     </div>
   );

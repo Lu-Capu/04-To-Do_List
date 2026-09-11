@@ -14,52 +14,98 @@ body {
 
 .App {
   width: 100%;
-  max-width: 420px;
+  max-width: 480px;
   padding: 0 24px;
 }
 
 h1 {
   color: #fff;
-  font-size: 1.2rem;
-  font-weight: 500;
-  margin-bottom: 6px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
 }
 
 .App > p {
-  color: #666;
-  font-size: 0.8rem;
-  margin-bottom: 16px;
+  color: #888;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+/* Barra de progreso */
+.barra-progreso {
+  width: 100%;
+  height: 4px;
+  background: #1a1a1a;
+  border-radius: 2px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.barra-progreso-fill {
+  height: 100%;
+  background: #7dd3fc;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* Botón notificaciones */
+.boton-notificaciones {
+  background: none;
+  border: 1px solid #333;
+  color: #7dd3fc;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: all 0.15s ease;
+}
+
+.boton-notificaciones:hover {
+  border-color: #7dd3fc;
+  background: rgba(125, 211, 252, 0.08);
+}
+
+.boton-notificaciones:active {
+  transform: scale(0.97);
 }
 
 /* Filtros */
 .contenedor-Filtro {
   display: flex;
-  gap: 4px;
-  margin-bottom: 10px;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
 .contenedor-Filtro button {
   background: none;
   border: 1px solid #222;
-  color: #666;
-  padding: 5px 10px;
-  font-size: 0.75rem;
+  color: #888;
+  padding: 8px 14px;
+  font-size: 0.85rem;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .contenedor-Filtro button:hover {
   color: #eaeaea;
-  border-color: #333;
+  border-color: #444;
+}
+
+.contenedor-Filtro button.activo {
+  color: #7dd3fc;
+  border-color: #7dd3fc;
 }
 
 .boton-Filtrar {
   display: block;
   background: none;
   border: none;
-  color: #555;
-  font-size: 0.75rem;
+  color: #666;
+  font-size: 0.85rem;
   cursor: pointer;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  transition: color 0.15s ease;
 }
 
 .boton-Filtrar:hover {
@@ -70,66 +116,94 @@ h1 {
 ul {
   list-style: none;
   border-top: 1px solid #222;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 li {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 10px 2px;
+  padding: 16px 2px;
   border-bottom: 1px solid #222;
-  gap: 8px;
+  gap: 10px;
+  animation: aparecer 0.25s ease;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .item-tarea {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 14px;
   cursor: pointer;
   flex: 1;
   min-width: 0;
 }
 
 .check {
-  width: 16px;
-  height: 16px;
-  margin-top: 2px;
-  border: 1px solid #444;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  border: 2px solid #444;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
+  font-size: 0.9rem;
   color: #000;
   flex-shrink: 0;
   transition:
     border-color 0.15s ease,
-    background 0.15s ease;
+    background 0.15s ease,
+    transform 0.15s ease;
 }
 
 .item-tarea:hover .check {
   border-color: #7dd3fc;
+  transform: scale(1.08);
 }
 
 .check.marcado {
   background: #7dd3fc;
   border-color: #7dd3fc;
+  animation: pop 0.25s ease;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.7);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .contenido-tarea {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 3px;
   min-width: 0;
   flex: 1;
 }
 
 .texto {
   color: #eaeaea;
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   word-break: break-word;
   overflow-wrap: anywhere;
+  transition: color 0.2s ease;
 }
 
 .texto.completada {
@@ -138,116 +212,235 @@ li {
 }
 
 .descripcion-tarea {
-  color: #777;
-  font-size: 0.75rem;
+  color: #888;
+  font-size: 0.9rem;
   word-break: break-word;
   overflow-wrap: anywhere;
 }
 
 .fecha-tarea {
-  color: #555;
-  font-size: 0.7rem;
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.acciones-tarea {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 li button {
   background: none;
   border: none;
-  color: #555;
-  font-size: 0.8rem;
+  color: #666;
+  font-size: 1rem;
   cursor: pointer;
+  padding: 6px 8px;
+  transition:
+    color 0.15s ease,
+    transform 0.15s ease;
 }
 
 li button:hover {
   color: #7dd3fc;
+  transform: scale(1.1);
+}
+
+li button:active {
+  transform: scale(0.95);
+}
+
+/* Modo edición */
+.item-tarea-editando {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 12px;
+  border-bottom: 1px solid #222;
+  background: #0a0a0a;
+  border-left: 2px solid #7dd3fc;
+  animation: aparecer 0.2s ease;
+}
+
+.item-tarea-editando input,
+.item-tarea-editando select {
+  background: #000;
+  border: none;
+  border-bottom: 1px solid #333;
+  padding: 10px 4px;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s ease;
+}
+
+.item-tarea-editando select {
+  appearance: none;
+  -webkit-appearance: none;
+  color: #ccc;
+}
+
+.item-tarea-editando input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
+.item-tarea-editando input:focus,
+.item-tarea-editando select:focus {
+  border-bottom-color: #7dd3fc;
+}
+
+.item-tarea-editando input::placeholder {
+  color: #555;
+}
+
+.item-tarea-editando > div {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.item-tarea-editando button {
+  flex: 1;
+  background: none;
+  border: 1px solid #333;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.item-tarea-editando button:first-of-type {
+  color: #7dd3fc;
+  border-color: #7dd3fc;
+}
+
+.item-tarea-editando button:first-of-type:hover {
+  background: rgba(125, 211, 252, 0.1);
+}
+
+.item-tarea-editando button:last-of-type {
+  color: #777;
+}
+
+.item-tarea-editando button:last-of-type:hover {
+  border-color: #555;
+  color: #aaa;
+}
+
+.item-tarea-editando button:active {
+  transform: scale(0.97);
 }
 
 /* Input y agregar */
 .contenedor-botonAgregar {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 }
 
 .contenedor-botonAgregar input,
-.contenedor-botonAgregar button {
-  width: 100%;
-}
-
-.contenedor-botonAgregar input {
+.contenedor-botonAgregar select {
   background: none;
   border: none;
   border-bottom: 1px solid #333;
-  padding: 6px 2px;
+  padding: 10px 4px;
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 1rem;
   outline: none;
+  width: 100%;
+  transition: border-color 0.15s ease;
+}
+
+.contenedor-botonAgregar select {
+  appearance: none;
+  -webkit-appearance: none;
+  color: #ccc;
+}
+
+.contenedor-botonAgregar input[type="datetime-local"] {
+  color-scheme: dark;
 }
 
 .contenedor-botonAgregar input::placeholder {
   color: #555;
 }
 
-.contenedor-botonAgregar input:focus {
+.contenedor-botonAgregar input:focus,
+.contenedor-botonAgregar select:focus {
   border-bottom-color: #7dd3fc;
-}
-
-.contenedor-botonAgregar input[type="date"] {
-  color: #999;
-  color-scheme: dark;
 }
 
 .contenedor-botonAgregar button {
   background: none;
   border: 1px solid #333;
   color: #7dd3fc;
-  padding: 8px 14px;
-  font-size: 0.85rem;
+  padding: 12px 16px;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
+  margin-top: 4px;
+  transition: all 0.15s ease;
 }
 
 .contenedor-botonAgregar button:hover {
   border-color: #7dd3fc;
+  background: rgba(125, 211, 252, 0.08);
+}
+
+.contenedor-botonAgregar button:active {
+  transform: scale(0.98);
+}
+/* Responsivo: tablets y celulares grandes */
+@media (max-width: 600px) {
+  .App {
+    max-width: 100%;
+    padding: 0 20px;
+  }
 }
 
 /* Responsivo: celular */
 @media (max-width: 480px) {
   body {
-    padding-top: 24px;
-  }
-
-  .App {
-    max-width: 100%;
-    padding: 0 20px;
+    padding-top: 32px;
   }
 
   h1 {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
   }
 
   .App > p {
     font-size: 0.9rem;
   }
 
+  .barra-progreso {
+    margin-bottom: 20px;
+  }
+
+  .boton-notificaciones {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
   .contenedor-Filtro {
     gap: 6px;
-    margin-bottom: 14px;
   }
 
   .contenedor-Filtro button {
     flex: 1;
-    padding: 10px 8px;
+    padding: 12px 6px;
     font-size: 0.85rem;
   }
 
   .boton-Filtrar {
     font-size: 0.85rem;
-    padding: 4px 0;
-    margin-bottom: 20px;
+    padding: 6px 0;
   }
 
   li {
-    padding: 14px 2px;
-    gap: 10px;
+    padding: 16px 0;
+    gap: 8px;
   }
 
   .item-tarea {
@@ -255,9 +448,9 @@ li button:hover {
   }
 
   .check {
-    width: 22px;
-    height: 22px;
-    font-size: 0.85rem;
+    width: 26px;
+    height: 26px;
+    font-size: 1rem;
   }
 
   .texto {
@@ -269,20 +462,41 @@ li button:hover {
   }
 
   .fecha-tarea {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
+  }
+
+  .acciones-tarea {
+    gap: 0;
   }
 
   li button {
-    font-size: 1.1rem;
-    padding: 6px 8px;
+    font-size: 1.15rem;
+    padding: 8px;
   }
 
-  .contenedor-botonAgregar {
-    gap: 10px;
-    margin-top: 4px;
+  .item-tarea-editando {
+    padding: 16px 10px;
+    gap: 12px;
   }
 
-  .contenedor-botonAgregar input {
+  .item-tarea-editando input,
+  .item-tarea-editando select {
+    font-size: 1rem;
+    padding: 12px 4px;
+  }
+
+  .item-tarea-editando > div {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .item-tarea-editando button {
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+
+  .contenedor-botonAgregar input,
+  .contenedor-botonAgregar select {
     font-size: 1rem;
     padding: 12px 4px;
   }
@@ -290,5 +504,48 @@ li button:hover {
   .contenedor-botonAgregar button {
     padding: 14px;
     font-size: 1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .App {
+    padding: 0 16px;
+  }
+
+  h1 {
+    font-size: 1.35rem;
+  }
+
+  .contenedor-Filtro {
+    flex-wrap: wrap;
+  }
+
+  .contenedor-Filtro button {
+    flex: 1 1 30%;
+    padding: 10px 4px;
+    font-size: 0.8rem;
+  }
+
+  .texto {
+    font-size: 1rem;
+  }
+  .busqueda {
+    width: 100%;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #333;
+    padding: 10px 4px;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 16px;
+  }
+
+  .busqueda::placeholder {
+    color: #555;
+  }
+
+  .busqueda:focus {
+    border-bottom-color: #7dd3fc;
   }
 }

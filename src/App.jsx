@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import TaskForm from "./components/TaskForm";
 import TaskFilter from "./components/TaskFilter";
 import TaskList from "./components/TaskList";
@@ -10,6 +10,8 @@ function App() {
     return guardadas ? JSON.parse(guardadas) : [];
   });
 
+  const timeoutsRef = useRef({});
+  const [busqueda, setBusqueda] = useState("");
   useEffect(() => {
     localStorage.setItem("mis_tareas", JSON.stringify(tareas));
   }, [tareas]);
@@ -24,70 +26,100 @@ function App() {
       if (permiso === "granted") {
         new Notification("¡Notificaciones activadas!", {
           body: "Te avisaremos antes de que venzan tus tareas.",
-          icon: "/pwa-192x192.png",
+          icon: "/logo-negro.png",
         });
       }
     }
   };
+
   const enviarNotificacion = (titulo, descripcion) => {
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification(titulo, {
         body: descripcion || "Tienes una tarea pendiente.",
-        icon: "/pwa-192x192.png",
+        icon: "/logo-negro.png",
       });
     }
   };
+
+  const limpiarTimeout = useCallback((id) => {
+    if (timeoutsRef.current[id]) {
+      clearTimeout(timeoutsRef.current[id]);
+      delete timeoutsRef.current[id];
+    }
+  }, []);
+
   const programarRecordatorio = (tarea) => {
     if (!tarea.fecha || tarea.completada) return;
 
     const tiempoLimite = new Date(tarea.fecha).getTime();
     const tiempoActual = new Date().getTime();
 
-    // Notificar 15 minutos antes (15m * 60s * 1000ms)
-    const margenAnticipacion = 15 * 60 * 1000;
+    const minutosAntes = tarea.anticipacion || 15;
+    const margenAnticipacion = minutosAntes * 60 * 1000;
     const tiempoEspera = tiempoLimite - margenAnticipacion - tiempoActual;
 
     if (tiempoEspera > 0) {
+      const textoAviso =
+        minutosAntes >= 1440
+          ? `Vence en ${minutosAntes / 1440} día(s).`
+          : minutosAntes >= 60
+            ? `Vence en ${minutosAntes / 60} hora(s).`
+            : `Vence en ${minutosAntes} minutos.`;
+
       setTimeout(() => {
         enviarNotificacion(
-          `!!Tarea próxima a vencer: ${tarea.texto}`,
-          "Vence en 15 minutos.",
+          `¡Tarea próxima a vencer: ${tarea.texto}`,
+          textoAviso,
         );
       }, tiempoEspera);
     }
   };
 
-  // 4. Reprogramar recordatorios existentes al cargar o abrir la app
   useEffect(() => {
     if ("Notification" in window && Notification.permission === "granted") {
       tareas.forEach((t) => programarRecordatorio(t));
     }
-  }, []);
-  // 5. Manejar creación de tarea + temporizador
-  const handleAgregarTarea = (objetoTarea) => {
-    setTareas((prev) => [...prev, objetoTarea]);
-    programarRecordatorio(objetoTarea);
-  };
+
+    return () => {
+      Object.values(timeoutsRef.current).forEach(clearTimeout);
+      timeoutsRef.current = {};
+    };
+  }, [tareas, programarRecordatorio]);
+
+  const handleAgregarTarea = useCallback(
+    (objetoTarea) => {
+      setTareas((prev) => [...prev, objetoTarea]);
+      programarRecordatorio(objetoTarea);
+    },
+    [programarRecordatorio],
+  );
 
   const [filtro, setFiltro] = useState("todas");
 
-  const handleAlternarCompletada = (id) => {
-    setTareas(
-      tareas.map((t) =>
-        t.id === id ? { ...t, completada: !t.completada } : t,
-      ),
+  const handleAlternarCompletada = useCallback((id) => {
+    setTareas((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, completada: !t.completada } : t)),
     );
-  };
+  }, []);
 
-  const handleEliminarTarea = (id) => {
-    setTareas(tareas.filter((t) => t.id !== id));
-  };
-
-  const handleEditarTarea = (id, texto, descripcion, fecha) => {
+  const handleEliminarTarea = useCallback(
+    (id) => {
+      limpiarTimeout(id);
+      setTareas((prev) => prev.filter((t) => t.id !== id));
+    },
+    [limpiarTimeout],
+  );
+  const handleEditarTarea = (id, texto, descripcion, fecha, anticipacion) => {
     setTareas(
       tareas.map((t) => {
         if (t.id === id) {
-          const tareaActualizada = { ...t, texto, descripcion, fecha };
+          const tareaActualizada = {
+            ...t,
+            texto,
+            descripcion,
+            fecha,
+            anticipacion,
+          };
           programarRecordatorio(tareaActualizada);
           return tareaActualizada;
         }
@@ -96,13 +128,22 @@ function App() {
     );
   };
 
-  const handleLimpiar = () => {
-    setTareas(tareas.filter((t) => !t.completada));
-  };
+  const handleLimpiar = useCallback(() => {
+    setTareas((prev) => {
+      const eliminadas = prev.filter((t) => t.completada);
+      eliminadas.forEach((t) => limpiarTimeout(t.id));
+      return prev.filter((t) => !t.completada);
+    });
+  }, [limpiarTimeout]);
 
   const pendientes = tareas.filter((t) => !t.completada).length;
 
   const tareasFiltradas = tareas.filter((t) => {
+    const coincideTexto =
+      t.texto.toLowerCase().includes(busqueda.toLowerCase()) ||
+      (t.descripcion &&
+        t.descripcion.toLowerCase().includes(busqueda.toLowerCase()));
+    if (!coincideTexto) return false;
     if (filtro === "pendientes") return !t.completada;
     if (filtro === "completadas") return t.completada;
     return true;
@@ -112,13 +153,32 @@ function App() {
     <div className="App">
       <h1>Lista de Tareas</h1>
       <p>Pendientes: {pendientes}</p>
+      <div className="barra-progreso">
+        <div
+          className="barra-progreso-fill"
+          style={{
+            width: `${tareas.length ? ((tareas.length - pendientes) / tareas.length) * 100 : 0}%`,
+          }}
+        />
+      </div>
       <button
+        className="boton-notificaciones"
         onClick={solicitarPermisoNotificaciones}
-        style={{ marginBottom: "15px", cursor: "pointer" }}
       >
         Activar Recordatorios
       </button>
-      <TaskFilter setFiltro={setFiltro} onLimpiar={handleLimpiar} />
+      <input
+        className="busqueda"
+        type="text"
+        value={busqueda}
+        onChange={(e) => setBusqueda(e.target.value)}
+        placeholder="Buscar tarea..."
+      />
+      <TaskFilter
+        filtro={filtro}
+        setFiltro={setFiltro}
+        onLimpiar={handleLimpiar}
+      />
       <TaskList
         tareas={tareasFiltradas}
         onAlternar={handleAlternarCompletada}

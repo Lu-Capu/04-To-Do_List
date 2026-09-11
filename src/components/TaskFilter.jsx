@@ -1,18 +1,21 @@
-function TaskFilter({ setFiltro, onLimpiar }) {
+function TaskFilter({ filtro, setFiltro, onLimpiar }) {
   return (
     <>
       <div className="contenedor-Filtro">
-        <button className="Filtro-Toda" onClick={() => setFiltro("todas")}>
+        <button
+          className={filtro === "todas" ? "activo" : ""}
+          onClick={() => setFiltro("todas")}
+        >
           Todas
         </button>
         <button
-          className="Filtro-Pendiente"
+          className={filtro === "pendientes" ? "activo" : ""}
           onClick={() => setFiltro("pendientes")}
         >
           Pendientes
         </button>
         <button
-          className="Filtro-Completada"
+          className={filtro === "completadas" ? "activo" : ""}
           onClick={() => setFiltro("completadas")}
         >
           Completadas
