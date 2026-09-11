@@ -56,11 +56,7 @@ function App() {
     <div className="App">
       <h1>Lista de Tareas</h1>
       <p>Pendientes: {pendientes}</p>
-      <TaskFilter
-        filtro={filtro}
-        setFiltro={setFiltro}
-        onLimpiar={handleLimpiar}
-      />
+      <TaskFilter setFiltro={setFiltro} onLimpiar={handleLimpiar} />
       <TaskList
         tareas={tareasFiltradas}
         onAlternar={handleAlternarCompletada}
