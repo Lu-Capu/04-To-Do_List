@@ -208,3 +208,87 @@ li button:hover {
 .contenedor-botonAgregar button:hover {
   border-color: #7dd3fc;
 }
+
+/* Responsivo: celular */
+@media (max-width: 480px) {
+  body {
+    padding-top: 24px;
+  }
+
+  .App {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  .App > p {
+    font-size: 0.9rem;
+  }
+
+  .contenedor-Filtro {
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .contenedor-Filtro button {
+    flex: 1;
+    padding: 10px 8px;
+    font-size: 0.85rem;
+  }
+
+  .boton-Filtrar {
+    font-size: 0.85rem;
+    padding: 4px 0;
+    margin-bottom: 20px;
+  }
+
+  li {
+    padding: 14px 2px;
+    gap: 10px;
+  }
+
+  .item-tarea {
+    gap: 12px;
+  }
+
+  .check {
+    width: 22px;
+    height: 22px;
+    font-size: 0.85rem;
+  }
+
+  .texto {
+    font-size: 1.05rem;
+  }
+
+  .descripcion-tarea {
+    font-size: 0.85rem;
+  }
+
+  .fecha-tarea {
+    font-size: 0.8rem;
+  }
+
+  li button {
+    font-size: 1.1rem;
+    padding: 6px 8px;
+  }
+
+  .contenedor-botonAgregar {
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .contenedor-botonAgregar input {
+    font-size: 1rem;
+    padding: 12px 4px;
+  }
+
+  .contenedor-botonAgregar button {
+    padding: 14px;
+    font-size: 1rem;
+  }
+}
