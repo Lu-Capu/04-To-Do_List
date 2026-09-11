@@ -14,11 +14,62 @@ function App() {
     localStorage.setItem("mis_tareas", JSON.stringify(tareas));
   }, [tareas]);
 
-  const [filtro, setFiltro] = useState("todas");
-
-  const handleAgregarTarea = (objetoTarea) => {
-    setTareas([...tareas, objetoTarea]);
+  const solicitarPermisoNotificaciones = async () => {
+    if (!("Notification" in window)) {
+      alert("Este navegador no soporta notificaciones.");
+      return;
+    }
+    if (Notification.permission === "default") {
+      const permiso = await Notification.requestPermission();
+      if (permiso === "granted") {
+        new Notification("¡Notificaciones activadas!", {
+          body: "Te avisaremos antes de que venzan tus tareas.",
+          icon: "/pwa-192x192.png",
+        });
+      }
+    }
   };
+  const enviarNotificacion = (titulo, descripcion) => {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification(titulo, {
+        body: descripcion || "Tienes una tarea pendiente.",
+        icon: "/pwa-192x192.png",
+      });
+    }
+  };
+  const programarRecordatorio = (tarea) => {
+    if (!tarea.fecha || tarea.completada) return;
+
+    const tiempoLimite = new Date(tarea.fecha).getTime();
+    const tiempoActual = new Date().getTime();
+
+    // Notificar 15 minutos antes (15m * 60s * 1000ms)
+    const margenAnticipacion = 15 * 60 * 1000;
+    const tiempoEspera = tiempoLimite - margenAnticipacion - tiempoActual;
+
+    if (tiempoEspera > 0) {
+      setTimeout(() => {
+        enviarNotificacion(
+          `!!Tarea próxima a vencer: ${tarea.texto}`,
+          "Vence en 15 minutos.",
+        );
+      }, tiempoEspera);
+    }
+  };
+
+  // 4. Reprogramar recordatorios existentes al cargar o abrir la app
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "granted") {
+      tareas.forEach((t) => programarRecordatorio(t));
+    }
+  }, []);
+  // 5. Manejar creación de tarea + temporizador
+  const handleAgregarTarea = (objetoTarea) => {
+    setTareas((prev) => [...prev, objetoTarea]);
+    programarRecordatorio(objetoTarea);
+  };
+
+  const [filtro, setFiltro] = useState("todas");
 
   const handleAlternarCompletada = (id) => {
     setTareas(
@@ -34,9 +85,14 @@ function App() {
 
   const handleEditarTarea = (id, texto, descripcion, fecha) => {
     setTareas(
-      tareas.map((t) =>
-        t.id === id ? { ...t, texto, descripcion, fecha } : t,
-      ),
+      tareas.map((t) => {
+        if (t.id === id) {
+          const tareaActualizada = { ...t, texto, descripcion, fecha };
+          programarRecordatorio(tareaActualizada);
+          return tareaActualizada;
+        }
+        return t;
+      }),
     );
   };
 
@@ -56,6 +112,12 @@ function App() {
     <div className="App">
       <h1>Lista de Tareas</h1>
       <p>Pendientes: {pendientes}</p>
+      <button
+        onClick={solicitarPermisoNotificaciones}
+        style={{ marginBottom: "15px", cursor: "pointer" }}
+      >
+        Activar Recordatorios
+      </button>
       <TaskFilter setFiltro={setFiltro} onLimpiar={handleLimpiar} />
       <TaskList
         tareas={tareasFiltradas}
