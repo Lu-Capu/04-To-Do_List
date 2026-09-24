@@ -95,8 +95,6 @@ function App() {
   );
 
   const [filtro, setFiltro] = useState("todas");
-  const completadas = tareas.length - pendientes;
-  const progreso = tareas.length ? Math.round((completadas / tareas.length) * 100) : 0;
 
   const handleAlternarCompletada = useCallback((id) => {
     setTareas((prev) =>
@@ -139,6 +137,8 @@ function App() {
   }, [limpiarTimeout]);
 
   const pendientes = tareas.filter((t) => !t.completada).length;
+  const completadas = tareas.length - pendientes;
+  const progreso = tareas.length ? Math.round((completadas / tareas.length) * 100) : 0;
 
   const tareasFiltradas = tareas.filter((t) => {
     const coincideTexto =
