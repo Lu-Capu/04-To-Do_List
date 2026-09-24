@@ -33,17 +33,20 @@ function TaskItem({ tarea, onAlternar, onEliminar, onEditar }) {
   if (editando) {
     return (
       <li className="item-tarea-editando">
+        <p className="eyebrow">Editando tarea</p>
         <input
           type="text"
           value={textoEdit}
           onChange={(e) => setTextoEdit(e.target.value)}
           placeholder="Título"
+          aria-label="Título de la tarea"
         />
         <input
           type="text"
           value={descEdit}
           onChange={(e) => setDescEdit(e.target.value)}
           placeholder="Descripción"
+          aria-label="Descripción de la tarea"
         />
         <input
           type="datetime-local"
@@ -60,8 +63,8 @@ function TaskItem({ tarea, onAlternar, onEliminar, onEditar }) {
           <option value="1440">Avisar 1 día antes</option>
         </select>
         <div>
-          <button onClick={handleGuardar}>Guardar</button>
-          <button onClick={handleCancelar}>Cancelar</button>
+          <button onClick={handleGuardar} type="button">Guardar cambios</button>
+          <button onClick={handleCancelar} type="button">Cancelar</button>
         </div>
       </li>
     );
@@ -69,7 +72,7 @@ function TaskItem({ tarea, onAlternar, onEliminar, onEditar }) {
 
   return (
     <li>
-      <div className="item-tarea" onClick={() => onAlternar(tarea.id)}>
+      <div className="item-tarea" onClick={() => onAlternar(tarea.id)} role="button" tabIndex="0" onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onAlternar(tarea.id); }}>
         <span className={`check ${tarea.completada ? "marcado" : ""}`}>
           {tarea.completada && "✓"}
         </span>
@@ -94,8 +97,8 @@ function TaskItem({ tarea, onAlternar, onEliminar, onEditar }) {
         </div>
       </div>
       <div className="acciones-tarea">
-        <button onClick={() => setEditando(true)}>✎</button>
-        <button onClick={() => onEliminar(tarea.id)}>X</button>
+        <button onClick={(e) => { e.stopPropagation(); setEditando(true); }} aria-label={`Editar ${tarea.texto}`} type="button">✎</button>
+        <button onClick={(e) => { e.stopPropagation(); onEliminar(tarea.id); }} aria-label={`Eliminar ${tarea.texto}`} type="button">×</button>
       </div>
     </li>
   );
