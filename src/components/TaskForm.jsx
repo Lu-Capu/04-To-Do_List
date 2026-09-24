@@ -24,20 +24,22 @@ function TaskForm({ onAgregar }) {
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleAgregarTarea();
-    }
-  };
-
   return (
-    <div className="contenedor-botonAgregar">
+    <form className="contenedor-botonAgregar" onSubmit={(e) => { e.preventDefault(); handleAgregarTarea(); }}>
+      <div className="encabezado-formulario">
+        <div>
+          <p className="eyebrow">Nueva tarea</p>
+          <h2>¿Qué quieres lograr?</h2>
+        </div>
+        <span aria-hidden="true">＋</span>
+      </div>
       <input
         type="text"
         value={nuevaTarea}
         onChange={(e) => setNuevaTarea(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Nueva tarea"
+        placeholder="Escribe el título de tu tarea"
+        aria-label="Título de la tarea"
+        required
       />
       <input
         type="text"
@@ -59,8 +61,8 @@ function TaskForm({ onAgregar }) {
         <option value="60">Avisar 1 hora antes</option>
         <option value="1440">Avisar 1 día antes</option>
       </select>
-      <button onClick={handleAgregarTarea}>Agregar Tarea</button>
-    </div>
+      <button type="submit"><span aria-hidden="true">＋</span> Agregar tarea</button>
+    </form>
   );
 }
 

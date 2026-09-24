@@ -32,14 +32,14 @@ function App() {
     }
   };
 
-  const enviarNotificacion = (titulo, descripcion) => {
+  const enviarNotificacion = useCallback((titulo, descripcion) => {
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification(titulo, {
         body: descripcion || "Tienes una tarea pendiente.",
         icon: "/logo-negro.png",
       });
     }
-  };
+  }, []);
 
   const limpiarTimeout = useCallback((id) => {
     if (timeoutsRef.current[id]) {
@@ -48,7 +48,7 @@ function App() {
     }
   }, []);
 
-  const programarRecordatorio = (tarea) => {
+  const programarRecordatorio = useCallback((tarea) => {
     if (!tarea.fecha || tarea.completada) return;
 
     const tiempoLimite = new Date(tarea.fecha).getTime();
@@ -73,7 +73,7 @@ function App() {
         );
       }, tiempoEspera);
     }
-  };
+  }, [enviarNotificacion]);
 
   useEffect(() => {
     if ("Notification" in window && Notification.permission === "granted") {
@@ -95,6 +95,8 @@ function App() {
   );
 
   const [filtro, setFiltro] = useState("todas");
+  const completadas = tareas.length - pendientes;
+  const progreso = tareas.length ? Math.round((completadas / tareas.length) * 100) : 0;
 
   const handleAlternarCompletada = useCallback((id) => {
     setTareas((prev) =>
@@ -151,41 +153,89 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Lista de Tareas</h1>
-      <p>Pendientes: {pendientes}</p>
-      <div className="barra-progreso">
+      <header className="encabezado">
+        <div>
+          <p className="eyebrow">Organiza tu día</p>
+          <h1>Lista de tareas</h1>
+          <p className="subtitulo">
+            Un espacio sencillo para avanzar, una tarea a la vez.
+          </p>
+        </div>
+        <div className="resumen-progreso" aria-label={`${progreso}% completado`}>
+          <strong>{progreso}%</strong>
+          <span>completado</span>
+        </div>
+      </header>
+
+      <section className="tarjeta-progreso" aria-label="Resumen de tareas">
+        <div className="progreso-detalle">
+          <span><strong>{pendientes}</strong> pendientes</span>
+          <span>{completadas} completadas</span>
+        </div>
         <div
-          className="barra-progreso-fill"
-          style={{
-            width: `${tareas.length ? ((tareas.length - pendientes) / tareas.length) * 100 : 0}%`,
-          }}
+          className="barra-progreso"
+          role="progressbar"
+          aria-valuenow={progreso}
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-label="Progreso de tareas"
+        >
+          <div className="barra-progreso-fill" style={{ width: `${progreso}%` }} />
+        </div>
+      </section>
+
+      <main>
+        <section className="herramientas" aria-label="Herramientas de tareas">
+          <label className="campo-busqueda">
+            <span className="sr-only">Buscar tareas</span>
+            <span aria-hidden="true">⌕</span>
+            <input
+              type="search"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              placeholder="Buscar tareas..."
+            />
+            {busqueda && (
+              <button type="button" className="limpiar-busqueda" onClick={() => setBusqueda("")} aria-label="Limpiar búsqueda">
+                ×
+              </button>
+            )}
+          </label>
+          <button
+            className="boton-notificaciones"
+            onClick={solicitarPermisoNotificaciones}
+            type="button"
+          >
+            <span aria-hidden="true">♧</span> Activar recordatorios
+          </button>
+        </section>
+
+        <TaskFilter
+          filtro={filtro}
+          setFiltro={setFiltro}
+          onLimpiar={handleLimpiar}
+          completadas={completadas}
         />
-      </div>
-      <button
-        className="boton-notificaciones"
-        onClick={solicitarPermisoNotificaciones}
-      >
-        Activar Recordatorios
-      </button>
-      <input
-        className="busqueda"
-        type="text"
-        value={busqueda}
-        onChange={(e) => setBusqueda(e.target.value)}
-        placeholder="Buscar tarea..."
-      />
-      <TaskFilter
-        filtro={filtro}
-        setFiltro={setFiltro}
-        onLimpiar={handleLimpiar}
-      />
-      <TaskList
-        tareas={tareasFiltradas}
-        onAlternar={handleAlternarCompletada}
-        onEliminar={handleEliminarTarea}
-        onEditar={handleEditarTarea}
-      />
-      <TaskForm onAgregar={handleAgregarTarea} />
+        {tareasFiltradas.length > 0 ? (
+          <TaskList
+            tareas={tareasFiltradas}
+            onAlternar={handleAlternarCompletada}
+            onEliminar={handleEliminarTarea}
+            onEditar={handleEditarTarea}
+          />
+        ) : (
+          <div className="estado-vacio">
+            <span className="icono-vacio" aria-hidden="true">{busqueda ? "⌕" : "✓"}</span>
+            <h2>{busqueda ? "No encontramos tareas" : "Todo está al día"}</h2>
+            <p>
+              {busqueda
+                ? "Prueba con otro término de búsqueda."
+                : "Añade una tarea para empezar a organizarte."}
+            </p>
+          </div>
+        )}
+        <TaskForm onAgregar={handleAgregarTarea} />
+      </main>
     </div>
   );
 }
