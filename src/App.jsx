@@ -165,20 +165,6 @@ function App() {
         className="boton-notificaciones"
         onClick={solicitarPermisoNotificaciones}
       >
-        <button
-          className="boton-notificaciones"
-          onClick={solicitarPermisoNotificaciones}
-        >
-          <button
-            className="boton-notificaciones"
-            onClick={solicitarPermisoNotificaciones}
-          >
-            <button
-              className="boton-notificaciones"
-              onClick={solicitarPermisoNotificaciones}
-            ></button>
-          </button>
-        </button>
         Activar Recordatorios
       </button>
       <input

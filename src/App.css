@@ -1,551 +1,140 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+:root {
+  --fondo: #10131a;
+  --superficie: rgba(27, 32, 43, 0.8);
+  --superficie-solida: #1b202b;
+  --borde: #2c3444;
+  --texto: #f4f7fb;
+  --muted: #8e99aa;
+  --acento: #80e1c1;
+  --acento-fuerte: #4fc59e;
+  --peligro: #ff9d9d;
 }
 
+* { box-sizing: border-box; }
+
 body {
-  background: #000;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  display: flex;
-  justify-content: center;
-  padding-top: 60px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(73, 113, 154, 0.18), transparent 35rem),
+    var(--fondo);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible, [role="button"]:focus-visible {
+  outline: 3px solid rgba(128, 225, 193, 0.45);
+  outline-offset: 3px;
 }
 
 .App {
-  width: 100%;
-  max-width: 480px;
-  padding: 0 24px;
+  width: min(100% - 40px, 760px);
+  margin: 0 auto;
+  padding: 64px 0 72px;
 }
 
-h1 {
-  color: #fff;
-  font-size: 1.6rem;
-  font-weight: 600;
-  margin-bottom: 8px;
-  letter-spacing: -0.3px;
-}
-
-.App > p {
-  color: #888;
-  font-size: 0.95rem;
-  margin-bottom: 8px;
-}
-
-/* Barra de progreso */
-.barra-progreso {
-  width: 100%;
-  height: 4px;
-  background: #1a1a1a;
-  border-radius: 2px;
-  margin-bottom: 24px;
-  overflow: hidden;
-}
-
-.barra-progreso-fill {
-  height: 100%;
-  background: #7dd3fc;
-  border-radius: 2px;
-  transition: width 0.4s ease;
-}
-
-/* Botón notificaciones */
-.boton-notificaciones {
-  background: none;
-  border: 1px solid #333;
-  color: #7dd3fc;
-  padding: 10px 16px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  margin-bottom: 20px;
-  transition: all 0.15s ease;
-}
-
-.boton-notificaciones:hover {
-  border-color: #7dd3fc;
-  background: rgba(125, 211, 252, 0.08);
-}
-
-.boton-notificaciones:active {
-  transform: scale(0.97);
-}
-
-/* Filtros */
-.contenedor-Filtro {
+.encabezado {
   display: flex;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.contenedor-Filtro button {
-  background: none;
-  border: 1px solid #222;
-  color: #888;
-  padding: 8px 14px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.contenedor-Filtro button:hover {
-  color: #eaeaea;
-  border-color: #444;
-}
-
-.contenedor-Filtro button.activo {
-  color: #7dd3fc;
-  border-color: #7dd3fc;
-}
-
-.boton-Filtrar {
-  display: block;
-  background: none;
-  border: none;
-  color: #666;
-  font-size: 0.85rem;
-  cursor: pointer;
-  margin-bottom: 20px;
-  transition: color 0.15s ease;
-}
-
-.boton-Filtrar:hover {
-  color: #7dd3fc;
-}
-
-/* Lista */
-ul {
-  list-style: none;
-  border-top: 1px solid #222;
-  margin-bottom: 24px;
-}
-
-li {
-  display: flex;
+  align-items: flex-end;
   justify-content: space-between;
-  align-items: flex-start;
-  padding: 16px 2px;
-  border-bottom: 1px solid #222;
-  gap: 10px;
-  animation: aparecer 0.25s ease;
+  gap: 24px;
+  margin-bottom: 28px;
 }
 
-@keyframes aparecer {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--acento);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
-.item-tarea {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  cursor: pointer;
-  flex: 1;
-  min-width: 0;
+h1, h2, p { margin-top: 0; }
+h1 { margin-bottom: 10px; color: var(--texto); font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: -0.06em; line-height: 1; }
+h2 { margin-bottom: 0; color: var(--texto); font-size: 1.15rem; }
+.subtitulo { max-width: 420px; margin-bottom: 0; color: var(--muted); line-height: 1.5; }
+
+.resumen-progreso { display: grid; justify-items: end; color: var(--muted); }
+.resumen-progreso strong { color: var(--acento); font-size: 2rem; line-height: 1; }
+.resumen-progreso span { margin-top: 5px; font-size: 0.75rem; }
+
+.tarjeta-progreso, .contenedor-botonAgregar {
+  border: 1px solid var(--borde);
+  border-radius: 18px;
+  background: var(--superficie);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.15);
+}
+.tarjeta-progreso { padding: 18px 20px; margin-bottom: 28px; }
+.progreso-detalle { display: flex; justify-content: space-between; margin-bottom: 12px; color: var(--muted); font-size: 0.85rem; }
+.progreso-detalle strong { color: var(--texto); }
+.barra-progreso { height: 9px; overflow: hidden; border-radius: 99px; background: #252c39; }
+.barra-progreso-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--acento-fuerte), var(--acento)); transition: width 0.45s ease; }
+
+.herramientas { display: flex; gap: 12px; margin-bottom: 18px; }
+.campo-busqueda { display: flex; align-items: center; flex: 1; gap: 10px; min-width: 0; padding: 0 14px; border: 1px solid var(--borde); border-radius: 12px; background: var(--superficie-solida); color: var(--muted); }
+.campo-busqueda input { width: 100%; padding: 13px 0; border: 0; outline: 0; background: transparent; color: var(--texto); }
+.campo-busqueda input::placeholder { color: #727d8e; }
+.limpiar-busqueda { border: 0; background: transparent; color: var(--muted); font-size: 1.4rem; line-height: 1; }
+.boton-notificaciones { padding: 0 16px; border: 1px solid var(--borde); border-radius: 12px; background: transparent; color: var(--acento); font-size: 0.84rem; font-weight: 700; white-space: nowrap; transition: 0.2s ease; }
+.boton-notificaciones:hover { border-color: var(--acento); background: rgba(128, 225, 193, 0.08); transform: translateY(-1px); }
+
+.contenedor-Filtro { display: flex; gap: 6px; margin-bottom: 8px; padding: 4px; border-radius: 12px; background: #171c26; }
+.contenedor-Filtro button { flex: 1; padding: 9px 12px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font-size: 0.86rem; transition: 0.2s ease; }
+.contenedor-Filtro button:hover { color: var(--texto); }
+.contenedor-Filtro button.activo { background: var(--superficie-solida); color: var(--acento); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18); }
+.boton-Filtrar { margin: 0 0 18px; padding: 5px 0; border: 0; background: transparent; color: var(--muted); font-size: 0.8rem; }
+.boton-Filtrar:hover:not(:disabled) { color: var(--acento); }
+.boton-Filtrar:disabled { cursor: not-allowed; opacity: 0.4; }
+
+ul { list-style: none; margin: 0 0 28px; padding: 0; }
+li { display: flex; align-items: flex-start; gap: 14px; padding: 18px 4px; border-bottom: 1px solid rgba(44, 52, 68, 0.7); animation: aparecer 0.25s ease; }
+li:first-child { border-top: 1px solid rgba(44, 52, 68, 0.7); }
+@keyframes aparecer { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+.item-tarea { display: flex; align-items: flex-start; flex: 1; min-width: 0; gap: 14px; cursor: pointer; }
+.check { display: grid; place-items: center; width: 25px; height: 25px; margin-top: 1px; flex-shrink: 0; border: 2px solid #526075; border-radius: 50%; color: #10131a; font-size: 0.85rem; transition: 0.2s ease; }
+.item-tarea:hover .check { border-color: var(--acento); transform: scale(1.08); }
+.check.marcado { border-color: var(--acento); background: var(--acento); animation: pop 0.25s ease; }
+@keyframes pop { 0% { transform: scale(0.7); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+.contenido-tarea { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 5px; }
+.texto { color: var(--texto); font-size: 1rem; font-weight: 650; overflow-wrap: anywhere; }
+.texto.completada { color: #687385; text-decoration: line-through; }
+.descripcion-tarea { margin-bottom: 0; color: var(--muted); font-size: 0.88rem; overflow-wrap: anywhere; }
+.fecha-tarea { margin-bottom: 0; color: var(--acento); font-size: 0.76rem; }
+.acciones-tarea { display: flex; gap: 3px; flex-shrink: 0; }
+li button { padding: 6px 8px; border: 0; background: transparent; color: #738097; font-size: 1.1rem; transition: 0.2s ease; }
+li button:hover { color: var(--acento); transform: translateY(-1px); }
+li button:last-child:hover { color: var(--peligro); }
+
+.estado-vacio { margin: 8px 0 28px; padding: 42px 20px; border: 1px dashed var(--borde); border-radius: 16px; text-align: center; }
+.icono-vacio { display: grid; place-items: center; width: 46px; height: 46px; margin: 0 auto 14px; border-radius: 50%; background: rgba(128, 225, 193, 0.12); color: var(--acento); font-size: 1.4rem; }
+.estado-vacio h2 { margin-bottom: 8px; }
+.estado-vacio p { margin-bottom: 0; color: var(--muted); font-size: 0.9rem; }
+
+.contenedor-botonAgregar { display: flex; flex-direction: column; gap: 12px; padding: 22px; }
+.encabezado-formulario { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.encabezado-formulario > span { color: var(--acento); font-size: 1.8rem; }
+.contenedor-botonAgregar input, .contenedor-botonAgregar select, .item-tarea-editando input, .item-tarea-editando select { width: 100%; padding: 12px 13px; border: 1px solid var(--borde); border-radius: 9px; background: #151a23; color: var(--texto); outline: 0; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.contenedor-botonAgregar input:focus, .contenedor-botonAgregar select:focus, .item-tarea-editando input:focus, .item-tarea-editando select:focus { border-color: var(--acento); box-shadow: 0 0 0 3px rgba(128, 225, 193, 0.1); }
+.contenedor-botonAgregar input::placeholder, .item-tarea-editando input::placeholder { color: #697487; }
+.contenedor-botonAgregar input[type="datetime-local"], .item-tarea-editando input[type="datetime-local"] { color-scheme: dark; }
+.contenedor-botonAgregar button { padding: 13px; border: 0; border-radius: 9px; background: var(--acento); color: #10211e; font-weight: 800; transition: 0.2s ease; }
+.contenedor-botonAgregar button:hover { background: #a0efd6; transform: translateY(-1px); }
+.item-tarea-editando { display: flex; flex-direction: column; width: 100%; padding: 20px; border: 1px solid var(--borde); border-radius: 13px; background: var(--superficie-solida); }
+.item-tarea-editando > div { display: flex; gap: 10px; margin-top: 2px; }
+.item-tarea-editando button { flex: 1; border: 1px solid var(--borde); border-radius: 8px; }
+.item-tarea-editando button:first-of-type { border-color: var(--acento); color: var(--acento); }
+.item-tarea-editando button:last-of-type { color: var(--muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+
+@media (max-width: 560px) {
+  .App { width: min(100% - 28px, 760px); padding-top: 36px; }
+  .encabezado { align-items: flex-start; }
+  .resumen-progreso { display: none; }
+  .herramientas { flex-direction: column; }
+  .boton-notificaciones { padding: 12px; }
+  .contenedor-botonAgregar { padding: 18px; }
 }
 
-.check {
-  width: 24px;
-  height: 24px;
-  margin-top: 1px;
-  border: 2px solid #444;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  color: #000;
-  flex-shrink: 0;
-  transition:
-    border-color 0.15s ease,
-    background 0.15s ease,
-    transform 0.15s ease;
-}
-
-.item-tarea:hover .check {
-  border-color: #7dd3fc;
-  transform: scale(1.08);
-}
-
-.check.marcado {
-  background: #7dd3fc;
-  border-color: #7dd3fc;
-  animation: pop 0.25s ease;
-}
-
-@keyframes pop {
-  0% {
-    transform: scale(0.7);
-  }
-  60% {
-    transform: scale(1.15);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.contenido-tarea {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-  flex: 1;
-}
-
-.texto {
-  color: #eaeaea;
-  font-size: 1.05rem;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  transition: color 0.2s ease;
-}
-
-.texto.completada {
-  color: #555;
-  text-decoration: line-through;
-}
-
-.descripcion-tarea {
-  color: #888;
-  font-size: 0.9rem;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
-.fecha-tarea {
-  color: #666;
-  font-size: 0.8rem;
-}
-
-.acciones-tarea {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-li button {
-  background: none;
-  border: none;
-  color: #666;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 6px 8px;
-  transition:
-    color 0.15s ease,
-    transform 0.15s ease;
-}
-
-li button:hover {
-  color: #7dd3fc;
-  transform: scale(1.1);
-}
-
-li button:active {
-  transform: scale(0.95);
-}
-
-/* Modo edición */
-.item-tarea-editando {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 18px 12px;
-  border-bottom: 1px solid #222;
-  background: #0a0a0a;
-  border-left: 2px solid #7dd3fc;
-  animation: aparecer 0.2s ease;
-}
-
-.item-tarea-editando input,
-.item-tarea-editando select {
-  background: #000;
-  border: none;
-  border-bottom: 1px solid #333;
-  padding: 10px 4px;
-  color: #fff;
-  font-size: 1rem;
-  outline: none;
-  width: 100%;
-  transition: border-color 0.15s ease;
-}
-
-.item-tarea-editando select {
-  appearance: none;
-  -webkit-appearance: none;
-  color: #ccc;
-}
-
-.item-tarea-editando input[type="datetime-local"] {
-  color-scheme: dark;
-}
-
-.item-tarea-editando input:focus,
-.item-tarea-editando select:focus {
-  border-bottom-color: #7dd3fc;
-}
-
-.item-tarea-editando input::placeholder {
-  color: #555;
-}
-
-.item-tarea-editando > div {
-  display: flex;
-  gap: 10px;
-  margin-top: 6px;
-}
-
-.item-tarea-editando button {
-  flex: 1;
-  background: none;
-  border: 1px solid #333;
-  padding: 10px 14px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.item-tarea-editando button:first-of-type {
-  color: #7dd3fc;
-  border-color: #7dd3fc;
-}
-
-.item-tarea-editando button:first-of-type:hover {
-  background: rgba(125, 211, 252, 0.1);
-}
-
-.item-tarea-editando button:last-of-type {
-  color: #777;
-}
-
-.item-tarea-editando button:last-of-type:hover {
-  border-color: #555;
-  color: #aaa;
-}
-
-.item-tarea-editando button:active {
-  transform: scale(0.97);
-}
-
-/* Input y agregar */
-.contenedor-botonAgregar {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.contenedor-botonAgregar input,
-.contenedor-botonAgregar select {
-  background: none;
-  border: none;
-  border-bottom: 1px solid #333;
-  padding: 10px 4px;
-  color: #fff;
-  font-size: 1rem;
-  outline: none;
-  width: 100%;
-  transition: border-color 0.15s ease;
-}
-
-.contenedor-botonAgregar select {
-  appearance: none;
-  -webkit-appearance: none;
-  color: #ccc;
-}
-
-.contenedor-botonAgregar input[type="datetime-local"] {
-  color-scheme: dark;
-}
-
-.contenedor-botonAgregar input::placeholder {
-  color: #555;
-}
-
-.contenedor-botonAgregar input:focus,
-.contenedor-botonAgregar select:focus {
-  border-bottom-color: #7dd3fc;
-}
-
-.contenedor-botonAgregar button {
-  background: none;
-  border: 1px solid #333;
-  color: #7dd3fc;
-  padding: 12px 16px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  margin-top: 4px;
-  transition: all 0.15s ease;
-}
-
-.contenedor-botonAgregar button:hover {
-  border-color: #7dd3fc;
-  background: rgba(125, 211, 252, 0.08);
-}
-
-.contenedor-botonAgregar button:active {
-  transform: scale(0.98);
-}
-/* Responsivo: tablets y celulares grandes */
-@media (max-width: 600px) {
-  .App {
-    max-width: 100%;
-    padding: 0 20px;
-  }
-}
-
-/* Responsivo: celular */
-@media (max-width: 480px) {
-  body {
-    padding-top: 32px;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  .App > p {
-    font-size: 0.9rem;
-  }
-
-  .barra-progreso {
-    margin-bottom: 20px;
-  }
-
-  .boton-notificaciones {
-    width: 100%;
-    padding: 12px;
-    font-size: 0.9rem;
-  }
-
-  .contenedor-Filtro {
-    gap: 6px;
-  }
-
-  .contenedor-Filtro button {
-    flex: 1;
-    padding: 12px 6px;
-    font-size: 0.85rem;
-  }
-
-  .boton-Filtrar {
-    font-size: 0.85rem;
-    padding: 6px 0;
-  }
-
-  li {
-    padding: 16px 0;
-    gap: 8px;
-  }
-
-  .item-tarea {
-    gap: 12px;
-  }
-
-  .check {
-    width: 26px;
-    height: 26px;
-    font-size: 1rem;
-  }
-
-  .texto {
-    font-size: 1.05rem;
-  }
-
-  .descripcion-tarea {
-    font-size: 0.85rem;
-  }
-
-  .fecha-tarea {
-    font-size: 0.78rem;
-  }
-
-  .acciones-tarea {
-    gap: 0;
-  }
-
-  li button {
-    font-size: 1.15rem;
-    padding: 8px;
-  }
-
-  .item-tarea-editando {
-    padding: 16px 10px;
-    gap: 12px;
-  }
-
-  .item-tarea-editando input,
-  .item-tarea-editando select {
-    font-size: 1rem;
-    padding: 12px 4px;
-  }
-
-  .item-tarea-editando > div {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .item-tarea-editando button {
-    padding: 12px;
-    font-size: 0.95rem;
-  }
-
-  .contenedor-botonAgregar input,
-  .contenedor-botonAgregar select {
-    font-size: 1rem;
-    padding: 12px 4px;
-  }
-
-  .contenedor-botonAgregar button {
-    padding: 14px;
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .App {
-    padding: 0 16px;
-  }
-
-  h1 {
-    font-size: 1.35rem;
-  }
-
-  .contenedor-Filtro {
-    flex-wrap: wrap;
-  }
-
-  .contenedor-Filtro button {
-    flex: 1 1 30%;
-    padding: 10px 4px;
-    font-size: 0.8rem;
-  }
-
-  .texto {
-    font-size: 1rem;
-  }
-  .busqueda {
-    width: 100%;
-    background: none;
-    border: none;
-    border-bottom: 1px solid #333;
-    padding: 10px 4px;
-    color: #fff;
-    font-size: 1rem;
-    outline: none;
-    margin-bottom: 16px;
-  }
-
-  .busqueda::placeholder {
-    color: #555;
-  }
-
-  .busqueda:focus {
-    border-bottom-color: #7dd3fc;
-  }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
