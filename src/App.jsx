@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import TaskForm from "./components/TaskForm";
 import TaskFilter from "./components/TaskFilter";
 import TaskList from "./components/TaskList";
+import { useNotificaciones } from "./hooks/useNotificaciones";
 import "./App.css";
 
 function App() {
@@ -10,91 +11,76 @@ function App() {
     return guardadas ? JSON.parse(guardadas) : [];
   });
 
-  const timeoutsRef = useRef({});
   const [busqueda, setBusqueda] = useState("");
   useEffect(() => {
     localStorage.setItem("mis_tareas", JSON.stringify(tareas));
   }, [tareas]);
 
-  const solicitarPermisoNotificaciones = async () => {
-    if (!("Notification" in window)) {
-      alert("Este navegador no soporta notificaciones.");
+  const {
+    permiso,
+    soportadas,
+    contextoSeguro,
+    motivoBloqueo,
+    solicitarPermiso,
+    notificar,
+    agenda,
+    registro,
+    ultimoFallo,
+    swActivo,
+  } = useNotificaciones(tareas);
+
+  const bloqueado = motivoBloqueo !== null;
+  const [ayudaVisible, setAyudaVisible] = useState(false);
+  const [diagVisible, setDiagVisible] = useState(false);
+
+  const handleActivarNotificaciones = async () => {
+    if (bloqueado) {
+      setAyudaVisible((v) => !v);
       return;
     }
-    if (Notification.permission === "default") {
-      const permiso = await Notification.requestPermission();
-      if (permiso === "granted") {
-        new Notification("¡Notificaciones activadas!", {
-          body: "Te avisaremos antes de que venzan tus tareas.",
-          icon: "/logo-negro.png",
-        });
-      }
+    const resultado = await solicitarPermiso();
+    if (resultado === "granted") {
+      setAyudaVisible(false);
+      void notificar(
+        "¡Notificaciones activadas!",
+        "Te avisaremos antes de que venzan tus tareas.",
+        "confirmacion-permisos",
+      );
     }
   };
 
-  const enviarNotificacion = (titulo, descripcion) => {
-    if ("Notification" in window && Notification.permission === "granted") {
-      new Notification(titulo, {
-        body: descripcion || "Tienes una tarea pendiente.",
-        icon: "/logo-negro.png",
-      });
-    }
+  const handleProbar = () => {
+    void notificar(
+      "Notificaciones funcionando",
+      "Si ves esto, los avisos de vencimiento llegarán correctamente.",
+      "prueba-manual",
+    );
   };
 
-  const limpiarTimeout = useCallback((id) => {
-    if (timeoutsRef.current[id]) {
-      clearTimeout(timeoutsRef.current[id]);
-      delete timeoutsRef.current[id];
-    }
-  }, []);
+  const textoBoton = !soportadas
+    ? "Notificaciones no soportadas"
+    : !contextoSeguro
+      ? "Abrir en localhost"
+      : permiso === "granted"
+        ? "Notificaciones activadas"
+        : permiso === "denied"
+          ? "Notificaciones bloqueadas"
+          : "Activar Recordatorios";
 
-  const programarRecordatorio = (tarea) => {
-    if (!tarea.fecha || tarea.completada) return;
-
-    const tiempoLimite = new Date(tarea.fecha).getTime();
-    const tiempoActual = new Date().getTime();
-
-    const minutosAntes = tarea.anticipacion || 15;
-    const margenAnticipacion = minutosAntes * 60 * 1000;
-    const tiempoEspera = tiempoLimite - margenAnticipacion - tiempoActual;
-
-    if (tiempoEspera > 0) {
-      const textoAviso =
-        minutosAntes >= 1440
-          ? `Vence en ${minutosAntes / 1440} día(s).`
-          : minutosAntes >= 60
-            ? `Vence en ${minutosAntes / 60} hora(s).`
-            : `Vence en ${minutosAntes} minutos.`;
-
-      setTimeout(() => {
-        enviarNotificacion(
-          `¡Tarea próxima a vencer: ${tarea.texto}`,
-          textoAviso,
-        );
-      }, tiempoEspera);
-    }
+  const AYUDA = {
+    insecure:
+      "Las notificaciones sólo funcionan en contextos seguros. Estás entrando por la IP de red; abre la app en http://localhost:5173.",
+    denied:
+      "Tu navegador tiene las notificaciones bloqueadas para este sitio y ya no vuelve a preguntar. Para reactivarlas: pulsa el candado o el icono de ajustes junto a la barra de direcciones → Permisos → Notificaciones → Permitir, y luego recarga la página.",
+    unsupported:
+      "Este navegador no soporta la API de notificaciones. Prueba con Chrome, Edge o Firefox de escritorio.",
   };
-
-  useEffect(() => {
-    if ("Notification" in window && Notification.permission === "granted") {
-      tareas.forEach((t) => programarRecordatorio(t));
-    }
-
-    return () => {
-      Object.values(timeoutsRef.current).forEach(clearTimeout);
-      timeoutsRef.current = {};
-    };
-  }, [tareas, programarRecordatorio]);
-
-  const handleAgregarTarea = useCallback(
-    (objetoTarea) => {
-      setTareas((prev) => [...prev, objetoTarea]);
-      programarRecordatorio(objetoTarea);
-    },
-    [programarRecordatorio],
-  );
 
   const [filtro, setFiltro] = useState("todas");
+
+  const handleAgregarTarea = useCallback((objetoTarea) => {
+    setTareas((prev) => [...prev, objetoTarea]);
+  }, []);
 
   const handleAlternarCompletada = useCallback((id) => {
     setTareas((prev) =>
@@ -102,39 +88,21 @@ function App() {
     );
   }, []);
 
-  const handleEliminarTarea = useCallback(
-    (id) => {
-      limpiarTimeout(id);
-      setTareas((prev) => prev.filter((t) => t.id !== id));
-    },
-    [limpiarTimeout],
-  );
-  const handleEditarTarea = (id, texto, descripcion, fecha, anticipacion) => {
-    setTareas(
-      tareas.map((t) => {
-        if (t.id === id) {
-          const tareaActualizada = {
-            ...t,
-            texto,
-            descripcion,
-            fecha,
-            anticipacion,
-          };
-          programarRecordatorio(tareaActualizada);
-          return tareaActualizada;
-        }
-        return t;
-      }),
+  const handleEliminarTarea = useCallback((id) => {
+    setTareas((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const handleEditarTarea = useCallback((id, texto, descripcion, fecha, anticipacion) => {
+    setTareas((prev) =>
+      prev.map((t) =>
+        t.id === id ? { ...t, texto, descripcion, fecha, anticipacion } : t,
+      ),
     );
-  };
+  }, []);
 
   const handleLimpiar = useCallback(() => {
-    setTareas((prev) => {
-      const eliminadas = prev.filter((t) => t.completada);
-      eliminadas.forEach((t) => limpiarTimeout(t.id));
-      return prev.filter((t) => !t.completada);
-    });
-  }, [limpiarTimeout]);
+    setTareas((prev) => prev.filter((t) => !t.completada));
+  }, []);
 
   const pendientes = tareas.filter((t) => !t.completada).length;
 
@@ -161,12 +129,79 @@ function App() {
           }}
         />
       </div>
-      <button
-        className="boton-notificaciones"
-        onClick={solicitarPermisoNotificaciones}
-      >
-        Activar Recordatorios
-      </button>
+      <div className="barra-notificaciones">
+        <button
+          className="boton-notificaciones"
+          onClick={handleActivarNotificaciones}
+          aria-expanded={bloqueado ? ayudaVisible : undefined}
+        >
+          {textoBoton}
+        </button>
+        {permiso === "granted" && (
+          <button
+            className="boton-notificaciones secondary"
+            onClick={handleProbar}
+          >
+            Probar
+          </button>
+        )}
+        <button
+          className="boton-notificaciones secondary"
+          onClick={() => setDiagVisible((v) => !v)}
+          aria-expanded={diagVisible}
+        >
+          Diagnóstico
+        </button>
+      </div>
+      {bloqueado && ayudaVisible && (
+        <p className="aviso-notificaciones">{AYUDA[motivoBloqueo]}</p>
+      )}
+      {ultimoFallo && (
+        <p className="aviso-notificaciones error">
+          <strong>No se pudo mostrar:</strong> {ultimoFallo.detalle}
+        </p>
+      )}
+      {diagVisible && (
+        <div className="panel-diagnostico">
+          <dl>
+            <dt>Permiso</dt>
+            <dd>{permiso}</dd>
+            <dt>Contexto seguro</dt>
+            <dd>{contextoSeguro ? "sí" : "no"}</dd>
+            <dt>Service worker</dt>
+            <dd>
+              {swActivo === null
+                ? "sin comprobar"
+                : swActivo
+                  ? "registrado"
+                  : "no disponible (se usa new Notification)"}
+            </dd>
+            <dt>Avisos programados</dt>
+            <dd>{agenda.length}</dd>
+          </dl>
+          {agenda.length > 0 && (
+            <ul>
+              {agenda.map((a) => (
+                <li key={a.id}>
+                  {a.texto} → {a.cuando}
+                </li>
+              ))}
+            </ul>
+          )}
+          <h4>Últimos envíos</h4>
+          {registro.length === 0 ? (
+            <p>Ninguno todavía.</p>
+          ) : (
+            <ul>
+              {registro.map((r) => (
+                <li key={r.clave} className={r.ok ? "ok" : "fallo"}>
+                  {r.hora} · {r.titulo} · {r.detalle}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
       <input
         className="busqueda"
         type="text"

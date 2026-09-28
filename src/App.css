@@ -195,6 +195,87 @@ h2 {
   background: rgba(128, 225, 193, 0.08);
   transform: translateY(-1px);
 }
+.boton-notificaciones:disabled {
+  border-color: var(--borde);
+  color: var(--muted);
+  cursor: default;
+  opacity: 0.7;
+}
+.boton-notificaciones:disabled:hover {
+  border-color: var(--borde);
+  background: transparent;
+  transform: none;
+}
+.barra-notificaciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.boton-notificaciones.secondary {
+  color: var(--muted);
+}
+.aviso-notificaciones {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--borde);
+  border-left: 3px solid var(--acento);
+  border-radius: 10px;
+  background: rgba(128, 225, 193, 0.06);
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  text-align: left;
+}
+.aviso-notificaciones.error {
+  border-left-color: #e8735a;
+  background: rgba(232, 115, 90, 0.08);
+  color: #f0b4a6;
+}
+.panel-diagnostico {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.25);
+  font-size: 0.8rem;
+  text-align: left;
+}
+.panel-diagnostico dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  margin: 0 0 10px;
+}
+.panel-diagnostico dt {
+  color: var(--muted);
+}
+.panel-diagnostico dd {
+  margin: 0;
+  font-family: ui-monospace, Consolas, monospace;
+}
+.panel-diagnostico h4 {
+  margin: 12px 0 6px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.panel-diagnostico ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.panel-diagnostico li {
+  margin-bottom: 3px;
+  font-family: ui-monospace, Consolas, monospace;
+  word-break: break-word;
+}
+.panel-diagnostico li.ok {
+  color: var(--acento);
+}
+.panel-diagnostico li.fallo {
+  color: #e8735a;
+}
 
 .contenedor-Filtro {
   display: flex;
