@@ -1,8 +1,8 @@
 # Lista de Tareas · React PWA
 
-Gestor de tareas instalable como aplicación (PWA), construido con React 19 y
-Vite. Persistencia en `localStorage`, filtros, búsqueda, edición en línea y
-**notificaciones del navegador** que avisan antes de que venza cada tarea.
+Gestor de tareas que funciona como aplicación de escritorio, con recordatorios
+del navegador que avisan antes de que algo venza. React 19, Vite y
+`localStorage`; sin backend.
 
 ![Portada](assets/portada.png)
 <!-- 👆 Reemplaza esta línea por tu captura. -->
@@ -17,29 +17,32 @@ Vite. Persistencia en `localStorage`, filtros, búsqueda, edición en línea y
 
 ## ✨ Características
 
-- **CRUD completo:** agregar, editar en línea, marcar como completada y eliminar
-- **Persistencia en `localStorage`:** las tareas sobreviven a recargar o cerrar
-  la pestaña, sin backend
-- **Recordatorios con Notifications API:** cada tarea con fecha dispara un
-  aviso 15 min, 30 min, 1 hora o 1 día antes de vencer
-- **Aviso de tarea vencida:** si la fecha límite ya pasó, notifica en vez de
-  programar un temporizador imposible
-- **PWA instalable:** `vite-plugin-pwa` + Workbox con `autoUpdate`, manifiesto
-  propio e iconos 192/512, así se puede añadir a la pantalla de inicio
-- **Filtros** (todas / pendientes / completadas) y **búsqueda** por título y
-  descripción
-- **Barra de progreso** calculada sobre el total de tareas
-- **Limpiar completadas** en un clic, con contador
-- **Panel de diagnóstico** integrado: permiso actual, contexto seguro, estado
-  del service worker, avisos agendados e historial de envíos
-- **Mensajes de ayuda contextuales** según por qué fallan las notificaciones
-  (contexto inseguro, permiso denegado o navegador sin soporte)
+Lo de siempre está: alta, edición en línea, marcar como completada, eliminar,
+filtros, búsqueda por título y descripción, barra de progreso y un botón para
+tirar las completadas. Todo se guarda en `localStorage`, así que cerrar la
+pestaña no pierde nada.
+
+Lo que no es tan obvio:
+
+- **Recordatorios por tarea.** Cada tarea puede llevar fecha límite y elegir
+  cuánto antes avisar: 15 minutos, 30 minutos, una hora o un día. Si la fecha
+  ya pasó, avisa que está vencida en vez de quedarse esperando.
+- **Instalable.** `vite-plugin-pwa` con Workbox y `autoUpdate`, manifiesto
+  propio e iconos 192/512, así que se añade a la pantalla de inicio y abre sin
+  barra de navegador.
+- **Panel de diagnóstico.** Permiso actual, si el contexto es seguro, si hay
+  service worker registrado, cuántos avisos hay agendados y el resultado de los
+  últimos envíos. Los problemas de notificaciones casi nunca se pueden depurar
+  a ciegas, así que la app los expone.
+- **El botón no promete lo que no puede hacer.** Si abriste la app por la IP de
+  red o el permiso quedó bloqueado, el botón lo dice y al pulsarlo explica
+  cómo arreglarlo, en vez de fallar en silencio.
 
 ## 🚀 Instalación y uso
 
 ```bash
-git clone https://github.com/Lu-Capu/react-todo-pwa.git
-cd react-todo-pwa
+git clone https://github.com/Lu-Capu/04-To-Do_List.git
+cd 04-To-Do_List
 npm install
 npm run dev
 ```
@@ -77,6 +80,38 @@ src/
 public/                      # logo-negro.png e iconos del manifiesto
 ```
 
+## 🧠 Notas técnicas
+
+Casi todo el peso está en `useNotificaciones.js`. Los avisos no se programan
+con un `setTimeout` y ya, porque `setTimeout` tiene dos límites que rompen este
+caso: no puede esperar más de 2³¹−1 ms (unos 24.8 días) y se congela cuando la
+pestaña pasa a segundo plano o el equipo suspende. Así que cada alarma se
+parte en trozos del máximo permitido y, al dispararse, se reprograma por lo que
+falte (`useNotificaciones.js:53`). Encima de eso, un listener de
+`visibilitychange` recalcula la agenda completa cuando la app vuelve a primer
+plano, con lo que da igual cuántas veces haya dormido el sistema.
+
+Lo segundo que se repite es el aviso duplicado al recargar. La clave que se
+guarda en `localStorage` es el par *id de tarea* + *timestamp objetivo*: si ya se
+mandó para ese par, no se vuelve a mandar aunque la tarea siga pendiente. El
+registro se recorta a los últimos 200 para que no crezca para siempre.
+
+El envío va por dos rutas. Primero `registration.showNotification()`, que es la
+única que sobrevive con la app en segundo plano. Si no hay service worker
+registrado o esa llamada falla, cae a `new Notification()`. El error concreto
+de cada intento queda registrado y se ve en el panel de diagnóstico, en vez de
+un `catch` mudo.
+
+Un detalle que costó: `permission === "denied"` no vuelve a preguntar al
+navegador, nunca. La única salida es que el usuario toque el candado junto a la
+barra de direcciones y lo cambie a mano, así que el botón tiene que llevar a
+esa instrucción específica en vez de reintentar y rendirse.
+
+El resto de la app es estado en `useState` y un `useEffect` que escribe
+`localStorage` cuando cambia `tareas`. Búsqueda y filtro se calculan sobre ese
+mismo array en cada render, así que no hay estado duplicado que pueda
+desincronizarse.
+
 ## 📸 Capturas
 
 | Vista | Imagen |
@@ -88,7 +123,9 @@ public/                      # logo-negro.png e iconos del manifiesto
 
 ## 🔗 Demo en vivo
 
-[▶ Ver demo](https://lu-capu.github.io/react-todo-pwa/) · [💻 Ver código](https://github.com/Lu-Capu/react-todo-pwa)
+[💻 Ver código](https://github.com/Lu-Capu/04-To-Do_List)
+
+> Demo desplegada en GitHub Pages pendiente de publicar.
 
 ## 📄 Licencia
 
