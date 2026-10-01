@@ -213,6 +213,7 @@ function App() {
         filtro={filtro}
         setFiltro={setFiltro}
         onLimpiar={handleLimpiar}
+        completadas={tareas.filter((t) => t.completada).length}
       />
       <TaskList
         tareas={tareasFiltradas}
