@@ -4,8 +4,7 @@ Gestor de tareas que funciona como aplicación de escritorio, con recordatorios
 del navegador que avisan antes de que algo venza. React 19, Vite y
 `localStorage`; sin backend.
 
-![Portada](assets/portada.png)
-<!-- 👆 Reemplaza esta línea por tu captura. -->
+![Vista principal de la app](assets/portada.png)
 
 ## 🛠️ Tecnologías
 
@@ -114,12 +113,21 @@ desincronizarse.
 
 ## 📸 Capturas
 
-| Vista | Imagen |
-|---|---|
-| Vista principal | `assets/portada.png` |
-| Editando tarea | `assets/edicion.png` |
-| Panel de diagnóstico | `assets/diagnostico.png` |
-| Instalada como PWA | `assets/pwa.png` |
+**Vista principal** — lista, barra de progreso y recordatorios
+
+![Vista principal](assets/portada.png)
+
+**Editando una tarea**
+
+![Modo edición](assets/edicion.png)
+
+**Panel de diagnóstico** — permiso, contexto seguro, service worker, avisos agendados y últimos envíos
+
+![Panel de diagnóstico](assets/diagnostico.png)
+
+**Vista móvil**
+
+![Vista móvil](assets/movil.png)
 
 ## 🔗 Demo en vivo
 
