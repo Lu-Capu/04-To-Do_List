@@ -90,30 +90,6 @@ public/                      # logo-negro.png e iconos del manifiesto
 
 [▶ Ver demo](https://lu-capu.github.io/react-todo-pwa/) · [💻 Ver código](https://github.com/Lu-Capu/react-todo-pwa)
 
-## 📚 Qué aprendí
-
-- **Estrategia doble para notificar:** primero `registration.showNotification()`
-  y, si falla, `new Notification()` como respaldo. Reporta el motivo exacto en
-  lugar de tragarse el error en silencio
-- **`setTimeout` tiene un techo de 2³¹−1 ms (~24.8 días).** Cualquier alarma
-  más larga se agenda por trozos: cada tramo, al dispararse, se reprograma por
-  el resto (`useNotificaciones.js:53`)
-- **`visibilitychange` para reprogramar:** las alarmas de `setTimeout` mueren si
-  la pestaña queda en segundo plano o el equipo se suspende, así que al volver a
-  la pestaña se recalcula la agenda desde cero
-- **Deduplicación persistente:** un registro en `localStorage` con el
-  `id + timestamp` objetivo evita repetir el mismo aviso al recargar, y se
-  recorta a los últimos 200 para que no crezca sin límite
-- **React Compiler** vía `@rolldown/plugin-babel` con `reactCompilerPreset()`
-- **`useCallback` en los handlers** para que el efecto que reprogama las
-  alarmas no se dispare en cada render
-- **Estado derivado, no duplicado:** búsqueda y filtro se calculan sobre el
-  mismo array de tareas; `localStorage` se escribe con un `useEffect` que
-  depende de `tareas`
-- **Diagnóstico integrado en la UI:** en problemas de permisos es casi imposible
-  depurar a ciegas, así que la app expone permiso, contexto seguro, estado del
-  service worker y los últimos envíos con su resultado
-
 ## 📄 Licencia
 
 [MIT](LICENSE)
