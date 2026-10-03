@@ -111,7 +111,7 @@ El resto de la app es estado en `useState` y un `useEffect` que escribe
 mismo array en cada render, así que no hay estado duplicado que pueda
 desincronizarse.
 
-## 📸 Capturas
+##  Capturas
 
 **Vista principal** — lista, barra de progreso y recordatorios
 
@@ -129,12 +129,12 @@ desincronizarse.
 
 ![Vista móvil](assets/movil.png)
 
-## 🔗 Demo en vivo
+##  Demo en vivo
 
-[💻 Ver código](https://github.com/Lu-Capu/04-To-Do_List)
+[ Ver código](https://github.com/Lu-Capu/04-To-Do_List)
 
 > Demo desplegada en GitHub Pages pendiente de publicar.
 
-## 📄 Licencia
+##  Licencia
 
 [MIT](LICENSE)
