@@ -6,7 +6,7 @@ del navegador que avisan antes de que algo venza. React 19, Vite y
 
 ![Vista principal de la app](assets/portada.png)
 
-## 🛠️ Tecnologías
+##  Tecnologías
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white)
@@ -14,7 +14,7 @@ del navegador que avisan antes de que algo venza. React 19, Vite y
 ![ESLint](https://img.shields.io/badge/ESLint-10-4B32C3?style=for-the-badge&logo=eslint&logoColor=white)
 ![PWA](https://img.shields.io/badge/PWA-vite--plugin--pwa-5A0FC8?style=for-the-badge)
 
-## ✨ Características
+##  Características
 
 Lo de siempre está: alta, edición en línea, marcar como completada, eliminar,
 filtros, búsqueda por título y descripción, barra de progreso y un botón para
@@ -37,7 +37,7 @@ Lo que no es tan obvio:
   red o el permiso quedó bloqueado, el botón lo dice y al pulsarlo explica
   cómo arreglarlo, en vez de fallar en silencio.
 
-## 🚀 Instalación y uso
+##  Instalación y uso
 
 ```bash
 git clone https://github.com/Lu-Capu/04-To-Do_List.git
@@ -48,7 +48,7 @@ npm run dev
 
 Abre `http://localhost:5173`.
 
-> ⚠️ Las notificaciones del navegador **solo funcionan en contexto seguro**:
+>  Las notificaciones del navegador **solo funcionan en contexto seguro**:
 > `https://` o `http://localhost`. Si abres la app por la IP de red
 > (`http://192.168.x.x:5173`), el botón dirá "Abrir en localhost".
 
@@ -61,7 +61,7 @@ Abre `http://localhost:5173`.
 | `npm run preview` | Sirve `dist/` para probar el build |
 | `npm run lint` | ESLint sobre todo el proyecto |
 
-## 📁 Estructura
+##  Estructura
 
 ```
 src/
@@ -79,7 +79,7 @@ src/
 public/                      # logo-negro.png e iconos del manifiesto
 ```
 
-## 🧠 Notas técnicas
+##  Notas técnicas
 
 Casi todo el peso está en `useNotificaciones.js`. Los avisos no se programan
 con un `setTimeout` y ya, porque `setTimeout` tiene dos límites que rompen este
